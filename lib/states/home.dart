@@ -170,6 +170,13 @@ class _HomeState extends State<Home> {
                           fontSize: 16,
                         ),
                       ),
+                      Text(
+                        "สถานะ : " + x,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
                     ],
                   ),
                 ),
