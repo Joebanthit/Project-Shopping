@@ -19,7 +19,7 @@ final Map<String, WidgetBuilder> map = {
   '/listproductbuy': (BuildContext context) => ListProductBuy(),
   '/addproductbuy': (BuildContext context) => AddProductBuy(),
   '/useproduct': (BuildContext context) => UseProduct(),
-  '/detailproducthouse': (BuildContext context) => DetailProductHouse(),
+  // '/detailproducthouse': (BuildContext context) => DetailProductHouse(),
   '/detailproductbuy': (BuildContext context) => DetailProductBuy(),
 };
 
