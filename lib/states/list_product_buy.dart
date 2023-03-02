@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:projectshopping/states/detail_product_buy.dart';
+import 'package:projectshopping/states/detail_product_house.dart';
+import 'package:projectshopping/states/edit_product.dart';
+import 'package:projectshopping/states/use_product.dart';
 import 'package:projectshopping/utility/my_constant.dart';
-import 'package:projectshopping/widgets/show_image.dart';
+
 import 'package:intl/intl.dart';
 
 class ListProductBuy extends StatefulWidget {
@@ -14,17 +19,9 @@ class ListProductBuy extends StatefulWidget {
 
 class _ListProductBuyState extends State<ListProductBuy> {
   @override
-  //firebase
-  // void initState() {
-  //   super.initState();
-  //   Firebase.initializeApp();
-  // }
-  // final Stream<QuerySnapshot> product =
-  //     FirebaseFirestore.instance.collection('Product').snapshots();
-//Method
-
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xfff6f7f9),
       appBar: AppBar(
         title: Text('รายการสินค้าที่ควรซื้อเข้าบ้าน'),
       ),
@@ -43,20 +40,23 @@ class _ListProductBuyState extends State<ListProductBuy> {
           return ListView.builder(
             itemCount: documents.length,
             itemBuilder: (BuildContext context, int index) {
-              final data = documents[index].data() as Map<String, dynamic>;
-              final timestamp = data['timestamp'] as Timestamp;
-              final formattedDate =
-                  DateFormat('dd MMM yyyy').format(timestamp.toDate());
-              final formattedTime =
-                  DateFormat(' hh:mm aaa').format(timestamp.toDate());
-              var x = '';
-              if (data['amount'] == 1) {
-                x = 'ควรซื้อ';
+              var title = snapshot.data!.docs[index]['title'];
+              var image = snapshot.data!.docs[index]['image'];
+              var location = snapshot.data!.docs[index]['location'];
+              var amount = snapshot.data!.docs[index]['amount'];
+              var price = snapshot.data!.docs[index]['price'];
+              var timestamp = snapshot.data!.docs[index]['timestamp'];
+              var docId = snapshot.data!.docs[index].id;
+
+              var status = '';
+              if (amount == 1) {
+                status = 'ควรซื้อ';
+
                 return Container(
                   height: 100,
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   decoration: BoxDecoration(
-                    color: Colors.pinkAccent,
+                    color: Colors.red.shade400,
                     borderRadius: BorderRadius.circular(13),
                     boxShadow: [
                       BoxShadow(
@@ -67,14 +67,23 @@ class _ListProductBuyState extends State<ListProductBuy> {
                     ],
                   ),
                   child: ListTile(
-                    onTap: () => Navigator.pushNamed(
-                        context, MyConstant.routeDetailProductBuy),
+                    onTap: () {
+                      Get.to(() => DetailProductBuy(), arguments: {
+                        'title': title,
+                        'location': location,
+                        'amount': amount,
+                        'price': price,
+                        'image': image,
+                        'timestamp': timestamp,
+                        'docId': docId,
+                      });
+                    },
                     leading: Image.network(
-                      data['image'].toString(),
+                      image.toString(),
                       fit: BoxFit.cover,
                     ),
                     title: Text(
-                      data['title'],
+                      title,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -86,14 +95,7 @@ class _ListProductBuyState extends State<ListProductBuy> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "วันที่ : " + formattedDate,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          "สถานะ : " + x,
+                          "สถานะ : " + status,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -104,8 +106,6 @@ class _ListProductBuyState extends State<ListProductBuy> {
                   ),
                 );
               }
-
-              return Column();
             },
           );
         },

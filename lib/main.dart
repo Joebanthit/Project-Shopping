@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:projectshopping/model/Product.dart';
 
 import 'package:projectshopping/states/add_product_buy.dart';
 import 'package:projectshopping/states/detail_product_buy.dart';
 
 import 'package:projectshopping/states/detail_product_house.dart';
-import 'package:projectshopping/states/edit_product.dart';
+
 import 'package:projectshopping/states/list_product_buy.dart';
 
 import 'package:projectshopping/states/home.dart';
@@ -20,7 +21,6 @@ final Map<String, WidgetBuilder> map = {
   '/useproduct': (BuildContext context) => UseProduct(),
   '/detailproducthouse': (BuildContext context) => DetailProductHouse(),
   '/detailproductbuy': (BuildContext context) => DetailProductBuy(),
-  // '/editproduct': (BuildContext context) => EditProduct(),
 };
 
 String? initlalRoute;
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       theme: ThemeData(primarySwatch: Colors.pink),
       title: MyConstant.appName,
       routes: map,

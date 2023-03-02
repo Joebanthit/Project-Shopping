@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:projectshopping/utility/my_constant.dart';
-import 'package:projectshopping/widgets/show_image.dart';
 
 class AddProductBuy extends StatefulWidget {
   const AddProductBuy({super.key});

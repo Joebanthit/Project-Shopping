@@ -1,18 +1,16 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:projectshopping/model/Product.dart';
 import 'package:projectshopping/states/detail_product_house.dart';
+import 'package:projectshopping/states/edit_product.dart';
+import 'package:projectshopping/states/use_product.dart';
 import 'package:projectshopping/utility/my_constant.dart';
-import 'package:projectshopping/widgets/show_image.dart';
-import 'package:intl/intl.dart';
 
-//model
-class Product {
-  final image;
-  final title;
-  Product(this.image, this.title);
-}
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,13 +20,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  @override
-  //Field
-
-  //firebase
-
-//Method
-
+//Widget
   Widget addProduct() {
     return ListTile(
       leading: Icon(
@@ -80,6 +72,8 @@ class _HomeState extends State<Home> {
     ));
   }
 
+  //Home
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xfff6f7f9),
@@ -101,79 +95,285 @@ class _HomeState extends State<Home> {
           return ListView.builder(
             itemCount: documents.length,
             itemBuilder: (BuildContext context, int index) {
-              final data = documents[index].data() as Map<String, dynamic>;
+              var title = snapshot.data!.docs[index]['title'];
+              var image = snapshot.data!.docs[index]['image'];
+              var location = snapshot.data!.docs[index]['location'];
+              var amount = snapshot.data!.docs[index]['amount'];
+              var price = snapshot.data!.docs[index]['price'];
+              var timestamp = snapshot.data!.docs[index]['timestamp'];
               var docId = snapshot.data!.docs[index].id;
-              var x = '';
 
-              if (data['amount'] == 0) {
-                FirebaseFirestore.instance
-                    .collection("Product")
-                    .doc(docId)
-                    .delete();
-              } else if (data['amount'] == 1) {
-                x = 'ควรซื้อ';
-              } else if (data['amount'] <= 5) {
-                x = 'ซื้อก็ได้ไม่ซื้อก็ได้';
-              } else if (data['amount'] > 6) {
-                x = 'ไม่ต้องซื้อ';
-              }
+              var status = '';
 
-              final timestamp = data['timestamp'] as Timestamp;
-              final formattedDate =
-                  DateFormat('dd MMM yyyy').format(timestamp.toDate());
-              final formattedTime =
-                  DateFormat(' hh:mm aaa').format(timestamp.toDate());
-              return Container(
-                height: 100,
-                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.pinkAccent,
-                  borderRadius: BorderRadius.circular(13),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 10,
-                        spreadRadius: 3,
-                        offset: Offset(3, 4))
-                  ],
-                ),
-                child: ListTile(
-                  onTap: () => Navigator.pushNamed(
-                      context, MyConstant.routeDetailProductHouse),
-                  leading: Image.network(
-                    data['image'].toString(),
-                    fit: BoxFit.cover,
-                  ),
-                  title: Text(
-                    data['title'],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 25,
-                    ),
-                  ),
-                  subtitle: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "วันที่ : " + formattedDate,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        "สถานะ : " + x,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
+              if (amount == 1) {
+                status = 'ควรซื้อ';
+
+                return Container(
+                  height: 110,
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    borderRadius: BorderRadius.circular(13),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 10,
+                          spreadRadius: 3,
+                          offset: Offset(3, 4))
                     ],
                   ),
-                ),
-              );
+                  child: ListTile(
+                    onTap: () {
+                      Get.to(() => DetailProductHouse(), arguments: {
+                        'title': title,
+                        'location': location,
+                        'amount': amount,
+                        'price': price,
+                        'image': image,
+                        'timestamp': timestamp,
+                        'docId': docId,
+                      });
+                    },
+                    leading: Image.network(
+                      image.toString(),
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 25,
+                      ),
+                    ),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "สถานะ : " + status,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            ElevatedButton(
+                              child: Text(
+                                "ใช้งาน",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () async {
+                                Get.to(() => UseProduct(), arguments: {
+                                  'amount': amount,
+                                  'docId': docId,
+                                });
+                              },
+                            ),
+                            ElevatedButton(
+                              child: Text(
+                                "แก้ไข",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () async {
+                                Get.to(() => EditProduct(), arguments: {
+                                  'title': title,
+                                  'location': location,
+                                  'amount': amount,
+                                  'price': price,
+                                  'image': image,
+                                  'timestamp': timestamp,
+                                  'docId': docId,
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else if (amount <= 5) {
+                status = 'ซื้อก็ได้ไม่ซื้อก็ได้';
+                return Container(
+                  height: 110,
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade400,
+                    borderRadius: BorderRadius.circular(13),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 10,
+                          spreadRadius: 3,
+                          offset: Offset(3, 4))
+                    ],
+                  ),
+                  child: ListTile(
+                    onTap: () {
+                      Get.to(() => DetailProductHouse(), arguments: {
+                        'title': title,
+                        'location': location,
+                        'amount': amount,
+                        'price': price,
+                        'image': image,
+                        'timestamp': timestamp,
+                        'docId': docId,
+                      });
+                    },
+                    leading: Image.network(
+                      image.toString(),
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 25,
+                      ),
+                    ),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "สถานะ : " + status,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            ElevatedButton(
+                              child: Text(
+                                "ใช้งาน",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () async {
+                                Get.to(() => UseProduct(), arguments: {
+                                  'amount': amount,
+                                  'docId': docId,
+                                });
+                              },
+                            ),
+                            ElevatedButton(
+                              child: Text(
+                                "แก้ไข",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () async {
+                                Get.to(() => EditProduct(), arguments: {
+                                  'title': title,
+                                  'location': location,
+                                  'amount': amount,
+                                  'price': price,
+                                  'image': image,
+                                  'timestamp': timestamp,
+                                  'docId': docId,
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else if (amount > 6) {
+                status = 'ไม่ต้องซื้อ';
+                return Container(
+                  height: 110,
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(13),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 10,
+                          spreadRadius: 3,
+                          offset: Offset(3, 4))
+                    ],
+                  ),
+                  child: ListTile(
+                    onTap: () {
+                      Get.to(() => DetailProductHouse(), arguments: {
+                        'title': title,
+                        'location': location,
+                        'amount': amount,
+                        'price': price,
+                        'image': image,
+                        'timestamp': timestamp,
+                        'docId': docId,
+                      });
+                    },
+                    leading: Image.network(
+                      image.toString(),
+                      fit: BoxFit.cover,
+                    ),
+                    title: Text(
+                      title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 25,
+                      ),
+                    ),
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "สถานะ : " + status,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            ElevatedButton(
+                              child: Text(
+                                "ใช้งาน",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () async {
+                                Get.to(() => UseProduct(), arguments: {
+                                  'amount': amount,
+                                  'docId': docId,
+                                });
+                              },
+                            ),
+                            ElevatedButton(
+                              child: Text(
+                                "แก้ไข",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () async {
+                                Get.to(() => EditProduct(), arguments: {
+                                  'title': title,
+                                  'location': location,
+                                  'amount': amount,
+                                  'price': price,
+                                  'image': image,
+                                  'timestamp': timestamp,
+                                  'docId': docId,
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else if (amount == 0) {}
             },
           );
         },
