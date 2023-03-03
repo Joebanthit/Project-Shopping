@@ -21,7 +21,7 @@ class _AddProductBuyState extends State<AddProductBuy> {
   //Field
   File? file;
   String imageUrl = '';
-
+  final _formkey = GlobalKey<FormState>();
   //medthod
 
   Future<Null> chooseImage(ImageSource source) async {
@@ -139,15 +139,19 @@ class _AddProductBuyState extends State<AddProductBuy> {
       child: TextFormField(
         controller: titleController,
         decoration: InputDecoration(
-            icon: Icon(
-              Icons.shop,
-              color: Colors.purple,
-              size: 30.0,
-            ),
-            labelText: 'ชื่อสินค้า',
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-            helperText: 'กรุณากรอกชื่อสินค้าด้วยครับ',
-            helperStyle: TextStyle(fontSize: 15.0)),
+          icon: Icon(
+            Icons.shop,
+            color: Colors.purple,
+            size: 30.0,
+          ),
+          labelText: 'ชื่อสินค้า',
+          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
+        validator: (value) {
+          if (value == '') {
+            return "กรุณากรอกชื่อสินค้าด้วยครับ";
+          }
+        },
       ),
     );
   }
@@ -156,17 +160,22 @@ class _AddProductBuyState extends State<AddProductBuy> {
     return Container(
       width: MediaQuery.of(context).size.width * 0.7,
       child: TextFormField(
+        keyboardType: TextInputType.number,
         controller: amountController,
         decoration: InputDecoration(
-            icon: Icon(
-              Icons.shopping_basket,
-              color: Colors.purple,
-              size: 30.0,
-            ),
-            labelText: 'จำนวนสินค้า',
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-            helperText: 'กรุณากรอกจำนวนสินค้าด้วยครับ',
-            helperStyle: TextStyle(fontSize: 15.0)),
+          icon: Icon(
+            Icons.shopping_basket,
+            color: Colors.purple,
+            size: 30.0,
+          ),
+          labelText: 'จำนวนสินค้า',
+          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
+        validator: (int) {
+          if (int == '') {
+            return "กรุณากรอกชื่อสินค้าด้วยครับ";
+          }
+        },
       ),
     );
   }
@@ -175,18 +184,22 @@ class _AddProductBuyState extends State<AddProductBuy> {
     return Container(
         width: MediaQuery.of(context).size.width * 0.7,
         child: TextFormField(
+          keyboardType: TextInputType.number,
           controller: priceController,
           decoration: InputDecoration(
-              icon: Icon(
-                Icons.attach_money,
-                color: Colors.purple,
-                size: 30.0,
-              ),
-              labelText: 'ราคาสินค้า',
-              labelStyle:
-                  TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-              helperText: 'กรุณากรอกราคาสินค้าด้วยครับ',
-              helperStyle: TextStyle(fontSize: 15.0)),
+            icon: Icon(
+              Icons.attach_money,
+              color: Colors.purple,
+              size: 30.0,
+            ),
+            labelText: 'ราคาสินค้า',
+            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+          ),
+          validator: (double) {
+            if (double == '') {
+              return "กรุณากรอกชื่อสินค้าด้วยครับ";
+            }
+          },
         ));
     ;
   }
@@ -197,15 +210,19 @@ class _AddProductBuyState extends State<AddProductBuy> {
       child: TextFormField(
         controller: locationController,
         decoration: InputDecoration(
-            icon: Icon(
-              Icons.location_on,
-              color: Colors.purple,
-              size: 30.0,
-            ),
-            labelText: 'สถานที่',
-            labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-            helperText: 'กรุณากรอกชื่อสถานที่ด้วยครับ',
-            helperStyle: TextStyle(fontSize: 15.0)),
+          icon: Icon(
+            Icons.location_on,
+            color: Colors.purple,
+            size: 30.0,
+          ),
+          labelText: 'สถานที่',
+          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+        ),
+        validator: (value) {
+          if (value == '') {
+            return "กรุณากรอกชื่อสินค้าด้วยครับ";
+          }
+        },
       ),
     );
   }
@@ -219,6 +236,11 @@ class _AddProductBuyState extends State<AddProductBuy> {
           style: TextStyle(fontSize: 30),
         ),
         onPressed: () async {
+          if (_formkey.currentState!.validate()) {
+            print("Success");
+          } else {
+            print("Failed");
+          }
           Navigator.pushNamed(context, MyConstant.routeHome);
           var title = titleController.text.trim();
           var amount = int.parse(amountController.text);
@@ -266,6 +288,7 @@ class _AddProductBuyState extends State<AddProductBuy> {
     return Scaffold(
       appBar: AppBar(title: Text('เพิ่มสินค้าเข้าบ้าน')),
       body: Form(
+        key: _formkey,
         child: ListView(children: <Widget>[
           showContent(),
         ]),

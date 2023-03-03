@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:projectshopping/model/Product.dart';
 import 'package:projectshopping/states/detail_product_house.dart';
 
-import 'package:projectshopping/states/use_product.dart';
 import 'package:projectshopping/utility/my_constant.dart';
 
 import 'package:intl/intl.dart';
@@ -107,14 +106,12 @@ class _HomeState extends State<Home> {
                     decoration: const InputDecoration(labelText: 'ชื่อสินค้า'),
                   ),
                   TextField(
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.number,
                     controller: amountController,
                     decoration: const InputDecoration(labelText: 'จำนวน'),
                   ),
                   TextField(
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.number,
                     controller: priceController,
                     decoration: const InputDecoration(labelText: 'ราคา'),
                   ),
@@ -132,7 +129,7 @@ class _HomeState extends State<Home> {
                     ),
                     onPressed: () async {
                       final String title = titleController.text;
-                      final String location = titleController.text;
+                      final String location = locationController.text;
                       final int? amount = int.tryParse(amountController.text);
                       final double? price =
                           double.tryParse(amountController.text);
@@ -177,17 +174,17 @@ class _HomeState extends State<Home> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextField(
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: TextInputType.number,
                     controller: amountController,
-                    decoration: const InputDecoration(labelText: 'จำนวน'),
+                    decoration: const InputDecoration(
+                        labelText: 'ระบุจำนวนที่ใช้งานสินค้า'),
                   ),
                   SizedBox(
                     height: 20,
                   ),
                   ElevatedButton(
                     child: Text(
-                      "ยืนยันข้อมูล",
+                      "ยืนยัน",
                       style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () async {
@@ -208,13 +205,23 @@ class _HomeState extends State<Home> {
         });
   }
 
+  Future<void> _delete(String productId) async {
+    await _Prodcuts.doc(productId).delete();
+  }
   //Home
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff6f7f9),
+      backgroundColor: Colors.grey,
       appBar: AppBar(
-        title: Text('แอพช่วยซื้อสินค้าเข้าบ้าน'),
+        backgroundColor: Colors.pinkAccent,
+        elevation: 0.0,
+        centerTitle: true,
+        title: Text(
+          'แอพช่วยซื้อสินค้าเข้าบ้าน',
+          style: TextStyle(
+              fontFamily: 'Varela', fontSize: 20.0, color: Colors.white),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _Prodcuts.snapshots(),
@@ -232,28 +239,35 @@ class _HomeState extends State<Home> {
                 final DocumentSnapshot data = streamSnapshot.data!.docs[index];
 
                 var status = '';
-                if (data['amount'] == 1) {
+                if (data['amount'] <= 1) {
                   status = 'ควรซื้อ';
-                  return Card(
-                    elevation: 5,
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      color: Colors.red.shade400,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            child: Image(
-                              image: NetworkImage(data['image'].toString()),
-                              fit: BoxFit.fill,
+
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DetailProductHouse(data: data))),
+                    child: Card(
+                      elevation: 5,
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        color: Colors.red.shade400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              child: Image(
+                                image: NetworkImage(data['image'].toString()),
+                                fit: BoxFit.fill,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: Container(
+                            Expanded(
+                                child: Container(
                               padding: EdgeInsets.only(bottom: 10),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -278,8 +292,6 @@ class _HomeState extends State<Home> {
                                       right: 8,
                                     ),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         ElevatedButton(
                                           child: Text(
@@ -288,206 +300,221 @@ class _HomeState extends State<Home> {
                                           ),
                                           onPressed: () => _useProdcut(data),
                                         ),
-                                        ElevatedButton(
-                                          child: Text(
-                                            "แก้ไข",
-                                            style: TextStyle(fontSize: 15),
+                                        SizedBox(
+                                          width: 70,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => _update(data),
+                                          child: Icon(
+                                            Icons.edit,
+                                            size: 30,
                                           ),
-                                          onPressed: () => _update(data),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => _delete(data.id),
+                                          child: Icon(
+                                            Icons.delete,
+                                            size: 30,
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ),
-                        ],
+                            ))
+                          ],
+                        ),
                       ),
                     ),
                   );
                 } else if (data['amount'] <= 5) {
                   status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
-                  return Card(
-                    elevation: 5,
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      color: Colors.orange.shade400,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            child: Image(
-                              image: NetworkImage(data['image'].toString()),
-                              fit: BoxFit.fill,
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DetailProductHouse(data: data))),
+                    child: Card(
+                      elevation: 5,
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        color: Colors.orange.shade400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              child: Image(
+                                image: NetworkImage(data['image'].toString()),
+                                fit: BoxFit.fill,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                              child: Container(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                    data['title'],
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
+                            Expanded(
+                                child: Container(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    child: Text(
+                                      data['title'],
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text("สถานะ : " + status),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: 8,
-                                    right: 8,
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    child: Text("สถานะ : " + status),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton(
-                                        child: Text(
-                                          "ใช้งาน",
-                                          style: TextStyle(fontSize: 15),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 8,
+                                      right: 8,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        ElevatedButton(
+                                          child: Text(
+                                            "ใช้งาน",
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                          onPressed: () => _useProdcut(data),
                                         ),
-                                        onPressed: () => _useProdcut(data),
-                                      ),
-                                      ElevatedButton(
-                                        child: Text(
-                                          "แก้ไข",
-                                          style: TextStyle(fontSize: 15),
+                                        SizedBox(
+                                          width: 70,
                                         ),
-                                        onPressed: () => _update(data),
-                                      ),
-                                    ],
+                                        GestureDetector(
+                                          onTap: () => _update(data),
+                                          child: Icon(
+                                            Icons.edit,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => _delete(data.id),
+                                          child: Icon(
+                                            Icons.delete,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ))
-                        ],
+                                ],
+                              ),
+                            ))
+                          ],
+                        ),
                       ),
                     ),
                   );
                 } else if (data['amount'] > 6) {
                   status = 'ไม่ควรซื้อ';
-                  return Card(
-                    elevation: 5,
-                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      color: Colors.green.shade400,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            child: Image(
-                              image: NetworkImage(data['image'].toString()),
-                              fit: BoxFit.fill,
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                DetailProductHouse(data: data))),
+                    child: Card(
+                      elevation: 5,
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      child: Container(
+                        padding: EdgeInsets.all(8),
+                        color: Colors.green.shade400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              child: Image(
+                                image: NetworkImage(data['image'].toString()),
+                                fit: BoxFit.fill,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                              child: Container(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                    data['title'],
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
+                            Expanded(
+                                child: Container(
+                              padding: EdgeInsets.only(bottom: 10),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    child: Text(
+                                      data['title'],
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text("สถานะ : " + status),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: 8,
-                                    right: 8,
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    child: Text("สถานะ : " + status),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton(
-                                        child: Text(
-                                          "ใช้งาน",
-                                          style: TextStyle(fontSize: 15),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: 8,
+                                      right: 8,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        ElevatedButton(
+                                          child: Text(
+                                            "ใช้งาน",
+                                            style: TextStyle(fontSize: 15),
+                                          ),
+                                          onPressed: () => _useProdcut(data),
                                         ),
-                                        onPressed: () => _useProdcut(data),
-                                      ),
-                                      ElevatedButton(
-                                        child: Text(
-                                          "แก้ไข",
-                                          style: TextStyle(fontSize: 15),
+                                        SizedBox(
+                                          width: 70,
                                         ),
-                                        onPressed: () => _update(data),
-                                      ),
-                                    ],
+                                        GestureDetector(
+                                          onTap: () => _update(data),
+                                          child: Icon(
+                                            Icons.edit,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => _delete(data.id),
+                                          child: Icon(
+                                            Icons.delete,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ))
-                        ],
+                                ],
+                              ),
+                            ))
+                          ],
+                        ),
                       ),
                     ),
                   );
                 }
               });
-
-          //   child: ListTile(
-          //     onTap: () => Navigator.push(
-          //         context,
-          //         MaterialPageRoute(
-          //             builder: (context) =>
-          //                 DetailProductHouse(data: data))),
-          //     leading: Image.network(
-          //       data['image'].toString(),
-          //       fit: BoxFit.cover,
-          //     ),
-          //     title: Text(
-          //       data['title'],
-          //       style: TextStyle(
-          //         fontWeight: FontWeight.bold,
-          //         color: Colors.white,
-          //         fontSize: 25,
-          //       ),
-          //     ),
-          //     subtitle: Column(
-          //       mainAxisAlignment: MainAxisAlignment.start,
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Text(
-          //           "สถานะ : " + status,
-          //           style: TextStyle(
-          //             color: Colors.white,
-          //             fontSize: 16,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // );
         },
       ),
       drawer: showDrawer(),

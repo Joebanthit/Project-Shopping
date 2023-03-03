@@ -16,97 +16,117 @@ class DetailProductHouse extends StatelessWidget {
 
   @override
   @override
-  // Widget deleteButton() {
-  //   return SizedBox(
-  //     child: ElevatedButton(
-  //       child: Text(
-  //         "ลบ",
-  //         style: TextStyle(fontSize: 20),
-  //       ),
-  //       onPressed: () async {
-  //         FirebaseFirestore.instance
-  //             .collection("Product")
-  //             .doc(data['docId'])
-  //             .delete();
-  //         Navigator.pushNamed(context, MyConstant.routeHome);
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget deleteButton() {
+    return SizedBox(
+      child: ElevatedButton(
+        child: Text(
+          "ลบ",
+          style: TextStyle(fontSize: 20),
+        ),
+        onPressed: () async {
+          FirebaseFirestore.instance
+              .collection("Product")
+              .doc(data['docId'])
+              .delete();
+        },
+      ),
+    );
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff6f7f9),
       appBar: AppBar(
-        title: Text("รายละเอียดสินค้า : " + data['title']),
-      ),
-      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Image.network(
-          data['image'].toString(),
-          fit: BoxFit.cover,
+        backgroundColor: Colors.pinkAccent,
+        elevation: 0.0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-        ListTile(
-          title: Text(
-            data['title'],
-            textAlign: TextAlign.center,
+        title: Text("รายละเอียด : " + data['title'],
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 25,
+                fontFamily: 'Varela', fontSize: 20.0, color: Colors.white)),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Container(
+            height: 300.0,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage(data['image'].toString()),
+                    fit: BoxFit.cover)),
+          ),
+          SizedBox(height: 20.0),
+          Center(
+            child: Text(
+              data['title'],
+              style: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF322F2E)),
             ),
           ),
-          subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "จำนวน : " + data['amount'].toString() + "  ชิ้น",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  "ราคา : " + data['price'].toString() + "  บาท",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  "สถานที่ : " + data['location'],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  "วันที่ : " +
-                      DateFormat('dd MMM yyyy')
-                          .format(data['timestamp'].toDate()),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  "เวลา : " +
-                      DateFormat(' hh:mm aaa')
-                          .format(data['timestamp'].toDate()),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Padding(padding: EdgeInsets.all(8.0)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // deleteButton(),
-                  ],
-                ),
-              ]),
-        ),
-      ]),
+          SizedBox(height: 10.0),
+          Center(
+            child: Text(
+              "จำนวน : " + data['amount'].toString(),
+              style: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF808080)),
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Center(
+            child: Text(
+              "ราคา : " + data['price'].toString(),
+              style: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF808080)),
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Center(
+            child: Text(
+              "วันที่ : " +
+                  DateFormat(' dd MMM yyyy').format(data['timestamp'].toDate()),
+              style: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF808080)),
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Center(
+            child: Text(
+              "เวลา :  " +
+                  DateFormat(' hh:mm aaa').format(data['timestamp'].toDate()),
+              style: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF808080)),
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Center(
+            child: Text(
+              "สถานที่: " + data['location'],
+              style: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF808080)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
