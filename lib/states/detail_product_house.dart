@@ -71,7 +71,7 @@ class DetailProductHouse extends StatelessWidget {
           SizedBox(height: 10.0),
           Center(
             child: Text(
-              "จำนวน : " + data['amount'].toString(),
+              "จำนวน : " + data['amount'].toString() + " ชิ้น",
               style: TextStyle(
                   fontFamily: 'OpenSans',
                   fontSize: 15.0,
@@ -82,7 +82,7 @@ class DetailProductHouse extends StatelessWidget {
           SizedBox(height: 10.0),
           Center(
             child: Text(
-              "ราคา : " + data['price'].toString(),
+              "ราคา : " + data['price'].toString() + " บาท",
               style: TextStyle(
                   fontFamily: 'OpenSans',
                   fontSize: 15.0,

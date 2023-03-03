@@ -278,13 +278,18 @@ class _HomeState extends State<Home> {
                                     child: Text(
                                       data['title'],
                                       style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
                                     ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text("สถานะ : " + status),
+                                    child: Text("สถานะ : " + status,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white)),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(
