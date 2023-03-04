@@ -23,6 +23,11 @@ class _ListProductBuyState extends State<ListProductBuy> {
 
 //
   final TextEditingController amountController = TextEditingController();
+
+  Future<void> _delete(String productId) async {
+    await _Prodcuts.doc(productId).delete();
+  }
+
   Future<void> _useProdcut([DocumentSnapshot? data]) async {
     if (data != null) {
       amountController.text = data['amount'].toString();
@@ -93,6 +98,7 @@ class _ListProductBuyState extends State<ListProductBuy> {
             itemCount: streamSnapshot.data!.docs.length,
             itemBuilder: (context, index) {
               final DocumentSnapshot data = streamSnapshot.data!.docs[index];
+
               var status = '';
               if (data['amount'] <= 1) {
                 status = 'ควรซื้อ';
@@ -159,6 +165,16 @@ class _ListProductBuyState extends State<ListProductBuy> {
                                           style: TextStyle(fontSize: 15),
                                         ),
                                         onPressed: () => _useProdcut(data),
+                                      ),
+                                      SizedBox(
+                                        width: 50,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _delete(data.id),
+                                        child: Icon(
+                                          Icons.delete,
+                                          size: 40,
+                                        ),
                                       ),
                                     ],
                                   ),
