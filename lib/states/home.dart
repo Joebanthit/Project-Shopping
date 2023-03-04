@@ -306,7 +306,7 @@ class _HomeState extends State<Home> {
                                           onPressed: () => _useProdcut(data),
                                         ),
                                         SizedBox(
-                                          width: 70,
+                                          width: 30,
                                         ),
                                         GestureDetector(
                                           onTap: () => _update(data),
@@ -316,7 +316,7 @@ class _HomeState extends State<Home> {
                                           ),
                                         ),
                                         SizedBox(
-                                          width: 50,
+                                          width: 40,
                                         ),
                                         GestureDetector(
                                           onTap: () => _delete(data.id),
@@ -402,7 +402,7 @@ class _HomeState extends State<Home> {
                                           onPressed: () => _useProdcut(data),
                                         ),
                                         SizedBox(
-                                          width: 70,
+                                          width: 30,
                                         ),
                                         GestureDetector(
                                           onTap: () => _update(data),
@@ -412,7 +412,7 @@ class _HomeState extends State<Home> {
                                           ),
                                         ),
                                         SizedBox(
-                                          width: 50,
+                                          width: 40,
                                         ),
                                         GestureDetector(
                                           onTap: () => _delete(data.id),
@@ -498,7 +498,7 @@ class _HomeState extends State<Home> {
                                           onPressed: () => _useProdcut(data),
                                         ),
                                         SizedBox(
-                                          width: 70,
+                                          width: 30,
                                         ),
                                         GestureDetector(
                                           onTap: () => _update(data),
@@ -508,7 +508,7 @@ class _HomeState extends State<Home> {
                                           ),
                                         ),
                                         SizedBox(
-                                          width: 50,
+                                          width: 40,
                                         ),
                                         GestureDetector(
                                           onTap: () => _delete(data.id),

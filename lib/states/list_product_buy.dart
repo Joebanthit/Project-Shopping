@@ -28,7 +28,7 @@ class _ListProductBuyState extends State<ListProductBuy> {
     await _Prodcuts.doc(productId).delete();
   }
 
-  Future<void> _useProdcut([DocumentSnapshot? data]) async {
+  Future<void> _useAddProdcut([DocumentSnapshot? data]) async {
     if (data != null) {
       amountController.text = data['amount'].toString();
     }
@@ -164,16 +164,16 @@ class _ListProductBuyState extends State<ListProductBuy> {
                                           "เพิ่มสินค้าที่ซื้อเข้าบ้าน",
                                           style: TextStyle(fontSize: 15),
                                         ),
-                                        onPressed: () => _useProdcut(data),
+                                        onPressed: () => _useAddProdcut(data),
                                       ),
                                       SizedBox(
-                                        width: 50,
+                                        width: 5,
                                       ),
                                       GestureDetector(
                                         onTap: () => _delete(data.id),
                                         child: Icon(
                                           Icons.delete,
-                                          size: 40,
+                                          size: 30,
                                         ),
                                       ),
                                     ],
