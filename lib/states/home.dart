@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:projectshopping/model/Product.dart';
+
 import 'package:projectshopping/states/detail_product_house.dart';
 
 import 'package:projectshopping/utility/my_constant.dart';
