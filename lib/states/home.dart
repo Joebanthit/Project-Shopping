@@ -343,7 +343,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   );
-                } else if (data['amount'] >= 5) {
+                } else if (data['amount'] <= 5) {
                   status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
                   return GestureDetector(
                     onTap: () => Navigator.push(
@@ -679,7 +679,7 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
               );
-            } else if (streamSnapshot[index]['amount'] >= 5) {
+            } else if (streamSnapshot[index]['amount'] <= 5) {
               status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
               return GestureDetector(
                 onTap: () => Navigator.push(
