@@ -85,7 +85,7 @@ class _ListProductBuyState extends State<ListProductBuy> {
         title: Text('รายการสินค้าที่ควรซื้อเข้าบ้าน'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _Prodcuts.snapshots(),
+        stream: _Prodcuts.orderBy('amount', descending: false).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasError) {
             return Text('Something went wrong');

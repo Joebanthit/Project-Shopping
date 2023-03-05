@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:projectshopping/model/Product.dart';
@@ -222,9 +223,15 @@ class _HomeState extends State<Home> {
           style: TextStyle(
               fontFamily: 'Varela', fontSize: 20.0, color: Colors.white),
         ),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => SearchPage())),
+              icon: const Icon(Icons.search))
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _Prodcuts.snapshots(),
+        stream: _Prodcuts.orderBy('amount', descending: false).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
           if (streamSnapshot.hasError) {
             return Text('Something went wrong');
@@ -336,7 +343,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   );
-                } else if (data['amount'] <= 5) {
+                } else if (data['amount'] >= 5) {
                   status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
                   return GestureDetector(
                     onTap: () => Navigator.push(
@@ -533,6 +540,265 @@ class _HomeState extends State<Home> {
         },
       ),
       drawer: showDrawer(),
+    );
+  }
+}
+
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  @override
+  List streamSnapshot = [];
+  List _resultList = [];
+  TextEditingController searchController = TextEditingController();
+  void initState() {
+    searchController.addListener(_onSearchChanged);
+    super.initState();
+  }
+
+  void dispose() {
+    searchController.removeListener(_onSearchChanged);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void didChangeDependencies() {
+    getClientStram();
+    super.didChangeDependencies();
+  }
+
+  _onSearchChanged() {
+    print(searchController.text);
+    searchResultList();
+  }
+
+  searchResultList() {
+    var showResults = [];
+    if (searchController.text != "") {
+      for (var clientSnapShot in streamSnapshot) {
+        var name = clientSnapShot['title'].toString().toLowerCase();
+        if (name.contains(searchController.text.toLowerCase())) {
+          showResults.add(clientSnapShot);
+        }
+      }
+    } else {
+      showResults = List.from(_resultList);
+    }
+    setState(() {
+      streamSnapshot = showResults;
+    });
+  }
+
+  getClientStram() async {
+    var data = await FirebaseFirestore.instance
+        .collection('Product')
+        .orderBy('amount', descending: false)
+        .get();
+    setState(() {
+      _resultList = data.docs;
+    });
+    searchResultList();
+  }
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey,
+      appBar: AppBar(
+        title: CupertinoSearchTextField(
+          controller: searchController,
+        ),
+      ),
+      body: ListView.builder(
+          itemCount: streamSnapshot.length,
+          itemBuilder: (context, index) {
+            final DocumentSnapshot data = streamSnapshot[index];
+
+            var status = '';
+            if (streamSnapshot[index]['amount'] <= 1) {
+              status = 'ควรซื้อ';
+
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailProductHouse(data: data))),
+                child: Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    color: Colors.red.shade400,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          child: Image(
+                            image: NetworkImage(
+                                streamSnapshot[index]['image'].toString()),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        Expanded(
+                            child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: Text(
+                                  streamSnapshot[index]['title'],
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: Text("สถานะ : " + status,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        ))
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else if (streamSnapshot[index]['amount'] >= 5) {
+              status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailProductHouse(data: data))),
+                child: Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    color: Colors.orange.shade400,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          child: Image(
+                            image: NetworkImage(
+                                streamSnapshot[index]['image'].toString()),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        Expanded(
+                            child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: Text(
+                                  streamSnapshot[index]['title'],
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: Text("สถานะ : " + status,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        ))
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else if (streamSnapshot[index]['amount'] > 6) {
+              status = 'ไม่ควรซื้อ';
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailProductHouse(data: data))),
+                child: Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    color: Colors.green.shade400,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          child: Image(
+                            image: NetworkImage(
+                                streamSnapshot[index]['image'].toString()),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        Expanded(
+                            child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: Text(
+                                  streamSnapshot[index]['title'],
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 8),
+                                child: Text("สถานะ : " + status,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        ))
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+          }),
     );
   }
 }
