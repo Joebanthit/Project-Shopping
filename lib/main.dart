@@ -15,7 +15,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 final Map<String, WidgetBuilder> map = {
   '/home': (BuildContext context) => Home(),
-  '/listproductbuy': (BuildContext context) => ListProductBuy(),
+  // '/listproductbuy': (BuildContext context) => ListProductBuy(),
   '/addproductbuy': (BuildContext context) => AddProductBuy(),
   // '/useproduct': (BuildContext context) => UseProduct(),
   // '/detailproducthouse': (BuildContext context) => DetailProductHouse(),

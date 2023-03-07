@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
         size: 40.0,
         color: Colors.green,
       ),
-      title: Text('เพิ่มสินค้าเข้าบ้าน'),
+      title: Text('เพิ่มสินค้าชนิดใหม่'),
       onTap: () => Navigator.pushNamed(context, MyConstant.routeAddProductBuy),
     );
   }
@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
       children: <Widget>[
         showHead(),
         addProduct(),
-        shouldBuy(),
+        // shouldBuy(),
       ],
     ));
   }
@@ -79,14 +79,12 @@ class _HomeState extends State<Home> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
 
   Future<void> _update([DocumentSnapshot? data]) async {
     if (data != null) {
       titleController.text = data['title'];
       amountController.text = data['amount'].toString();
       priceController.text = data['price'].toString();
-      locationController.text = data['location'];
     }
     await showModalBottomSheet(
         isScrollControlled: true,
@@ -116,10 +114,6 @@ class _HomeState extends State<Home> {
                     controller: priceController,
                     decoration: const InputDecoration(labelText: 'ราคา'),
                   ),
-                  TextField(
-                    controller: locationController,
-                    decoration: const InputDecoration(labelText: 'สถานที่'),
-                  ),
                   SizedBox(
                     height: 20,
                   ),
@@ -130,7 +124,7 @@ class _HomeState extends State<Home> {
                     ),
                     onPressed: () async {
                       final String title = titleController.text;
-                      final String location = locationController.text;
+
                       final int? amount = int.tryParse(amountController.text);
                       final double? price =
                           double.tryParse(amountController.text);
@@ -140,12 +134,10 @@ class _HomeState extends State<Home> {
                             "title": title,
                             "amount": amount,
                             "price": price,
-                            "location": location,
                           });
                           titleController.text = '';
                           amountController.text = '';
                           priceController.text = '';
-                          locationController.text = '';
                         }
                       }
                       Navigator.pop(context);
@@ -177,8 +169,8 @@ class _HomeState extends State<Home> {
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: amountController,
-                    decoration: const InputDecoration(
-                        labelText: 'ระบุจำนวนที่ใช้งานสินค้า'),
+                    decoration:
+                        const InputDecoration(labelText: 'จำนวนคงเหลือสินค้า'),
                   ),
                   SizedBox(
                     height: 20,
@@ -209,6 +201,7 @@ class _HomeState extends State<Home> {
   Future<void> _delete(String productId) async {
     await _Prodcuts.doc(productId).delete();
   }
+
   //Home
 
   Widget build(BuildContext context) {
@@ -244,294 +237,366 @@ class _HomeState extends State<Home> {
               itemCount: streamSnapshot.data!.docs.length,
               itemBuilder: (context, index) {
                 final DocumentSnapshot data = streamSnapshot.data!.docs[index];
-
-                var status = '';
                 if (data['amount'] <= 1) {
-                  status = 'ควรซื้อ';
-
-                  return GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                DetailProductHouse(data: data))),
-                    child: Card(
-                      elevation: 5,
-                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        color: Colors.red.shade400,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 100,
-                              child: Image(
-                                image: NetworkImage(data['image'].toString()),
-                                fit: BoxFit.fill,
-                              ),
+                  return Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      color: Colors.red.shade400,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            child: Image(
+                              image: NetworkImage(data['image'].toString()),
+                              fit: BoxFit.fill,
                             ),
-                            Expanded(
-                                child: Container(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text(
-                                      data['title'],
+                          ),
+                          Expanded(
+                              child: Container(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                    "สินค้า : " + data['title'],
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "จำนวนคงเหลือ : " +
+                                          data['amount'].toString(),
                                       style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "ราคา : " + data['price'].toString(),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "วันที่ : " +
+                                          DateFormat(' dd MMM yyyy').format(
+                                              data['timestamp'].toDate()),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "เวลา : " +
+                                          DateFormat(' hh:mm aaa').format(
+                                              data['timestamp'].toDate()),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 8,
+                                    right: 8,
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text("สถานะ : " + status,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)),
+                                  child: Row(
+                                    children: [
+                                      ElevatedButton(
+                                        child: Text(
+                                          "ใช้งาน",
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        onPressed: () => _useProdcut(data),
+                                      ),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _update(data),
+                                        child: Icon(
+                                          Icons.edit,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 40,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _delete(data.id),
+                                        child: Icon(
+                                          Icons.delete,
+                                          size: 30,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 8,
-                                      right: 8,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        ElevatedButton(
-                                          child: Text(
-                                            "ใช้งาน",
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                          onPressed: () => _useProdcut(data),
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _update(data),
-                                          child: Icon(
-                                            Icons.edit,
-                                            size: 30,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 40,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _delete(data.id),
-                                          child: Icon(
-                                            Icons.delete,
-                                            size: 30,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ))
-                          ],
-                        ),
+                                ),
+                              ],
+                            ),
+                          ))
+                        ],
                       ),
                     ),
                   );
-                } else if (data['amount'] <= 5) {
-                  status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
-                  return GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                DetailProductHouse(data: data))),
-                    child: Card(
-                      elevation: 5,
-                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        color: Colors.orange.shade400,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 100,
-                              child: Image(
-                                image: NetworkImage(data['image'].toString()),
-                                fit: BoxFit.fill,
-                              ),
+                } else if (data['amount'] == 2) {
+                  return Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      color: Colors.yellow.shade700,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            child: Image(
+                              image: NetworkImage(data['image'].toString()),
+                              fit: BoxFit.fill,
                             ),
-                            Expanded(
-                                child: Container(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text(
-                                      data['title'],
+                          ),
+                          Expanded(
+                              child: Container(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                    "สินค้า : " + data['title'],
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "จำนวนคงเหลือ : " +
+                                          data['amount'].toString(),
                                       style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "ราคา : " + data['price'].toString(),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "วันที่ : " +
+                                          DateFormat(' dd MMM yyyy').format(
+                                              data['timestamp'].toDate()),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "เวลา : " +
+                                          DateFormat(' hh:mm aaa').format(
+                                              data['timestamp'].toDate()),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 8,
+                                    right: 8,
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text("สถานะ : " + status,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)),
+                                  child: Row(
+                                    children: [
+                                      ElevatedButton(
+                                        child: Text(
+                                          "ใช้งาน",
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        onPressed: () => _useProdcut(data),
+                                      ),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _update(data),
+                                        child: Icon(
+                                          Icons.edit,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 40,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _delete(data.id),
+                                        child: Icon(
+                                          Icons.delete,
+                                          size: 30,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 8,
-                                      right: 8,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        ElevatedButton(
-                                          child: Text(
-                                            "ใช้งาน",
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                          onPressed: () => _useProdcut(data),
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _update(data),
-                                          child: Icon(
-                                            Icons.edit,
-                                            size: 30,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 40,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _delete(data.id),
-                                          child: Icon(
-                                            Icons.delete,
-                                            size: 30,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ))
-                          ],
-                        ),
+                                ),
+                              ],
+                            ),
+                          ))
+                        ],
                       ),
                     ),
                   );
-                } else if (data['amount'] > 6) {
-                  status = 'ไม่ควรซื้อ';
-                  return GestureDetector(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                DetailProductHouse(data: data))),
-                    child: Card(
-                      elevation: 5,
-                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        color: Colors.green.shade400,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 100,
-                              child: Image(
-                                image: NetworkImage(data['image'].toString()),
-                                fit: BoxFit.fill,
-                              ),
+                } else {
+                  return Card(
+                    elevation: 5,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      color: Colors.green.shade400,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            child: Image(
+                              image: NetworkImage(data['image'].toString()),
+                              fit: BoxFit.fill,
                             ),
-                            Expanded(
-                                child: Container(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text(
-                                      data['title'],
+                          ),
+                          Expanded(
+                              child: Container(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                    "สินค้า : " + data['title'],
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "จำนวนคงเหลือ : " +
+                                          data['amount'].toString(),
                                       style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "ราคา : " + data['price'].toString(),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "วันที่ : " +
+                                          DateFormat(' dd MMM yyyy').format(
+                                              data['timestamp'].toDate()),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8, right: 8),
+                                  child: Text(
+                                      "เวลา : " +
+                                          DateFormat(' hh:mm aaa').format(
+                                              data['timestamp'].toDate()),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 8,
+                                    right: 8,
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8, right: 8),
-                                    child: Text("สถานะ : " + status,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white)),
+                                  child: Row(
+                                    children: [
+                                      ElevatedButton(
+                                        child: Text(
+                                          "ใช้งาน",
+                                          style: TextStyle(fontSize: 15),
+                                        ),
+                                        onPressed: () => _useProdcut(data),
+                                      ),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _update(data),
+                                        child: Icon(
+                                          Icons.edit,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 40,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => _delete(data.id),
+                                        child: Icon(
+                                          Icons.delete,
+                                          size: 30,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                      left: 8,
-                                      right: 8,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        ElevatedButton(
-                                          child: Text(
-                                            "ใช้งาน",
-                                            style: TextStyle(fontSize: 15),
-                                          ),
-                                          onPressed: () => _useProdcut(data),
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _update(data),
-                                          child: Icon(
-                                            Icons.edit,
-                                            size: 30,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 40,
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => _delete(data.id),
-                                          child: Icon(
-                                            Icons.delete,
-                                            size: 30,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ))
-                          ],
-                        ),
+                                ),
+                              ],
+                            ),
+                          ))
+                        ],
                       ),
                     ),
                   );
@@ -553,9 +618,11 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   @override
+  final TextEditingController searchController = TextEditingController();
   List streamSnapshot = [];
   List _resultList = [];
-  TextEditingController searchController = TextEditingController();
+
+  @override
   void initState() {
     searchController.addListener(_onSearchChanged);
     super.initState();
@@ -581,8 +648,8 @@ class _SearchPageState extends State<SearchPage> {
     var showResults = [];
     if (searchController.text != "") {
       for (var clientSnapShot in streamSnapshot) {
-        var name = clientSnapShot['title'].toString().toLowerCase();
-        if (name.contains(searchController.text.toLowerCase())) {
+        var title = clientSnapShot['title'].toString().toLowerCase();
+        if (title.contains(searchController.text.toLowerCase())) {
           showResults.add(clientSnapShot);
         }
       }
@@ -597,7 +664,7 @@ class _SearchPageState extends State<SearchPage> {
   getClientStram() async {
     var data = await FirebaseFirestore.instance
         .collection('Product')
-        .orderBy('amount', descending: false)
+        .orderBy('amount')
         .get();
     setState(() {
       _resultList = data.docs;
@@ -605,10 +672,148 @@ class _SearchPageState extends State<SearchPage> {
     searchResultList();
   }
 
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+
+  Future<void> _update([DocumentSnapshot? data]) async {
+    if (data != null) {
+      titleController.text = data['title'];
+      amountController.text = data['amount'].toString();
+      priceController.text = data['price'].toString();
+    }
+    await showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext ctx) {
+          return Padding(
+            padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(labelText: 'ชื่อสินค้า'),
+                  ),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    controller: amountController,
+                    decoration: const InputDecoration(labelText: 'จำนวน'),
+                  ),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    controller: priceController,
+                    decoration: const InputDecoration(labelText: 'ราคา'),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    child: Text(
+                      "แก้ไข",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    onPressed: () async {
+                      final String title = titleController.text;
+
+                      final int? amount = int.tryParse(amountController.text);
+                      final double? price =
+                          double.tryParse(amountController.text);
+                      if (amount != null) {
+                        if (price != null) {
+                          final CollectionReference _Prodcuts =
+                              FirebaseFirestore.instance.collection('Product');
+                          await _Prodcuts.doc(data!.id).update({
+                            "title": title,
+                            "amount": amount,
+                            "price": price,
+                          });
+                          titleController.text = '';
+                          amountController.text = '';
+                          priceController.text = '';
+                        }
+                      }
+                      Navigator.pushNamed(context, MyConstant.routeHome);
+                    },
+                  ),
+                ]),
+          );
+        });
+  }
+
+  Future<void> _useProdcut([DocumentSnapshot? data]) async {
+    if (data != null) {
+      amountController.text = data['amount'].toString();
+    }
+    await showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext ctx) {
+          return Padding(
+            padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    controller: amountController,
+                    decoration:
+                        const InputDecoration(labelText: 'จำนวนคงเหลือ'),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    child: Text(
+                      "ยืนยัน",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    onPressed: () async {
+                      final int? amount = int.tryParse(amountController.text);
+
+                      if (amount != null) {
+                        final CollectionReference _Prodcuts =
+                            FirebaseFirestore.instance.collection('Product');
+                        await _Prodcuts.doc(data!.id).update({
+                          "amount": amount,
+                        });
+
+                        amountController.text = '';
+                      }
+                      Navigator.pushNamed(context, MyConstant.routeHome);
+                    },
+                  ),
+                ]),
+          );
+        });
+  }
+
+  Future<void> _delete(String productId) async {
+    final CollectionReference _Prodcuts =
+        FirebaseFirestore.instance.collection('Product');
+    await _Prodcuts.doc(productId).delete();
+    Navigator.pushNamed(context, MyConstant.routeHome);
+  }
+
+  //Home
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey,
       appBar: AppBar(
+        backgroundColor: Colors.pinkAccent,
+        elevation: 0.0,
+        centerTitle: true,
         title: CupertinoSearchTextField(
           controller: searchController,
         ),
@@ -618,182 +823,360 @@ class _SearchPageState extends State<SearchPage> {
           itemBuilder: (context, index) {
             final DocumentSnapshot data = streamSnapshot[index];
 
-            var status = '';
-            if (streamSnapshot[index]['amount'] <= 1) {
-              status = 'ควรซื้อ';
-
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailProductHouse(data: data))),
-                child: Card(
-                  elevation: 5,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    color: Colors.red.shade400,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          child: Image(
-                            image: NetworkImage(
-                                streamSnapshot[index]['image'].toString()),
-                            fit: BoxFit.fill,
-                          ),
+            if (data['amount'] <= 1) {
+              return Card(
+                elevation: 5,
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  color: Colors.red.shade400,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        child: Image(
+                          image: NetworkImage(data['image'].toString()),
+                          fit: BoxFit.fill,
                         ),
-                        Expanded(
-                            child: Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Text(
-                                  streamSnapshot[index]['title'],
+                      ),
+                      Expanded(
+                          child: Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                "สินค้า : " + data['title'],
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "จำนวนคงเหลือ : " + data['amount'].toString(),
                                   style: TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text("ราคา : " + data['price'].toString(),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "วันที่ซื้อล่าสุด : " +
+                                      DateFormat(' dd MMM yyyy')
+                                          .format(data['timestamp'].toDate()),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "เวลาซื้อล่าสุด : " +
+                                      DateFormat(' hh:mm aaa')
+                                          .format(data['timestamp'].toDate()),
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 8,
+                                right: 8,
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Text("สถานะ : " + status,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                              child: Row(
+                                children: [
+                                  ElevatedButton(
+                                    child: Text(
+                                      "ใช้งาน",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    onPressed: () => _useProdcut(data),
+                                  ),
+                                  SizedBox(
+                                    width: 30,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _update(data),
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 40,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _delete(data.id),
+                                    child: Icon(
+                                      Icons.delete,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ))
-                      ],
-                    ),
+                            ),
+                          ],
+                        ),
+                      ))
+                    ],
                   ),
                 ),
               );
-            } else if (streamSnapshot[index]['amount'] <= 5) {
-              status = 'ซื้อก็ได้ไม่ซื้อก็ไ้ด้';
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailProductHouse(data: data))),
-                child: Card(
-                  elevation: 5,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    color: Colors.orange.shade400,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          child: Image(
-                            image: NetworkImage(
-                                streamSnapshot[index]['image'].toString()),
-                            fit: BoxFit.fill,
-                          ),
+            } else if (data['amount'] == 2) {
+              return Card(
+                elevation: 5,
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  color: Colors.yellow.shade700,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        child: Image(
+                          image: NetworkImage(data['image'].toString()),
+                          fit: BoxFit.fill,
                         ),
-                        Expanded(
-                            child: Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Text(
-                                  streamSnapshot[index]['title'],
+                      ),
+                      Expanded(
+                          child: Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                "สินค้า : " + data['title'],
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "จำนวนคงเหลือ : " + data['amount'].toString(),
                                   style: TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text("ราคา : " + data['price'].toString(),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "วันที่ : " +
+                                      DateFormat(' dd MMM yyyy')
+                                          .format(data['timestamp'].toDate()),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "เวลา : " +
+                                      DateFormat(' hh:mm aaa')
+                                          .format(data['timestamp'].toDate()),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 8,
+                                right: 8,
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Text("สถานะ : " + status,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                              child: Row(
+                                children: [
+                                  ElevatedButton(
+                                    child: Text(
+                                      "ใช้งาน",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    onPressed: () => _useProdcut(data),
+                                  ),
+                                  SizedBox(
+                                    width: 30,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _update(data),
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 40,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _delete(data.id),
+                                    child: Icon(
+                                      Icons.delete,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ))
-                      ],
-                    ),
+                            ),
+                          ],
+                        ),
+                      ))
+                    ],
                   ),
                 ),
               );
-            } else if (streamSnapshot[index]['amount'] > 6) {
-              status = 'ไม่ควรซื้อ';
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailProductHouse(data: data))),
-                child: Card(
-                  elevation: 5,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    color: Colors.green.shade400,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          child: Image(
-                            image: NetworkImage(
-                                streamSnapshot[index]['image'].toString()),
-                            fit: BoxFit.fill,
-                          ),
+            } else {
+              return Card(
+                elevation: 5,
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  color: Colors.green.shade400,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        child: Image(
+                          image: NetworkImage(data['image'].toString()),
+                          fit: BoxFit.fill,
                         ),
-                        Expanded(
-                            child: Container(
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Text(
-                                  streamSnapshot[index]['title'],
+                      ),
+                      Expanded(
+                          child: Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                "สินค้า : " + data['title'],
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "จำนวนคงเหลือ : " + data['amount'].toString(),
                                   style: TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text("ราคา : " + data['price'].toString(),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "วันที่ : " +
+                                      DateFormat(' dd MMM yyyy')
+                                          .format(data['timestamp'].toDate()),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 8, right: 8),
+                              child: Text(
+                                  "เวลา : " +
+                                      DateFormat(' hh:mm aaa')
+                                          .format(data['timestamp'].toDate()),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: 8,
+                                right: 8,
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Text("สถานะ : " + status,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
+                              child: Row(
+                                children: [
+                                  ElevatedButton(
+                                    child: Text(
+                                      "ใช้งาน",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    onPressed: () => _useProdcut(data),
+                                  ),
+                                  SizedBox(
+                                    width: 30,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _update(data),
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 40,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => _delete(data.id),
+                                    child: Icon(
+                                      Icons.delete,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ))
-                      ],
-                    ),
+                            ),
+                          ],
+                        ),
+                      ))
+                    ],
                   ),
                 ),
               );

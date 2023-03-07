@@ -45,7 +45,6 @@ class _AddProductBuyState extends State<AddProductBuy> {
         titleText(),
         amountText(),
         priceText(),
-        locationText(),
         addButton(),
       ],
     );
@@ -204,29 +203,6 @@ class _AddProductBuyState extends State<AddProductBuy> {
     ;
   }
 
-  Widget locationText() {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
-      child: TextFormField(
-        controller: locationController,
-        decoration: InputDecoration(
-          icon: Icon(
-            Icons.location_on,
-            color: Colors.purple,
-            size: 30.0,
-          ),
-          labelText: 'สถานที่',
-          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
-        ),
-        validator: (value) {
-          if (value == '') {
-            return "กรุณากรอกชื่อสินค้าด้วยครับ";
-          }
-        },
-      ),
-    );
-  }
-
   Widget addButton() {
     return Container(
       padding: EdgeInsets.all(20),
@@ -245,28 +221,24 @@ class _AddProductBuyState extends State<AddProductBuy> {
           var title = titleController.text.trim();
           var amount = int.parse(amountController.text);
           var price = double.parse(priceController.text);
-          var location = locationController.text.trim();
 
           if (title != "") {
             if (amount != "") {
               if (price != "") {
-                if (location != "") {
-                  {
-                    try {
-                      await FirebaseFirestore.instance
-                          .collection("Product")
-                          .doc()
-                          .set({
-                        "timestamp": DateTime.now(),
-                        "title": title,
-                        "amount": amount,
-                        "price": price,
-                        "location": location,
-                        "image": imageUrl,
-                      });
-                    } catch (e) {
-                      print("Error $e");
-                    }
+                {
+                  try {
+                    await FirebaseFirestore.instance
+                        .collection("Product")
+                        .doc()
+                        .set({
+                      "timestamp": DateTime.now(),
+                      "title": title,
+                      "amount": amount,
+                      "price": price,
+                      "image": imageUrl,
+                    });
+                  } catch (e) {
+                    print("Error $e");
                   }
                 }
               }
@@ -280,13 +252,13 @@ class _AddProductBuyState extends State<AddProductBuy> {
   TextEditingController titleController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
+
   TextEditingController galleryController = TextEditingController();
   TextEditingController cameraController = TextEditingController();
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('เพิ่มสินค้าเข้าบ้าน')),
+      appBar: AppBar(title: Text('เพิ่มสินค้าชนิดใหม่')),
       body: Form(
         key: _formkey,
         child: ListView(children: <Widget>[
