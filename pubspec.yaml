@@ -41,6 +41,7 @@ dependencies:
   firebase_storage: ^11.0.14
   intl: ^0.17.0
   get: ^4.6.5
+
   firebase_messaging: ^14.2.5
 
 dev_dependencies:

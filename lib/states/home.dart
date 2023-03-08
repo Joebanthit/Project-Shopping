@@ -102,17 +102,22 @@ class _HomeState extends State<Home> {
                 children: [
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(labelText: 'ชื่อสินค้า'),
+                    decoration: const InputDecoration(
+                        labelText: 'ชื่อสินค้า',
+                        labelStyle: TextStyle(fontSize: 25)),
                   ),
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: amountController,
-                    decoration: const InputDecoration(labelText: 'จำนวน'),
+                    decoration: const InputDecoration(
+                        labelText: 'จำนวนคงเหลือสินค้า',
+                        labelStyle: TextStyle(fontSize: 25)),
                   ),
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: priceController,
-                    decoration: const InputDecoration(labelText: 'ราคา'),
+                    decoration: const InputDecoration(
+                        labelText: 'ราคา', labelStyle: TextStyle(fontSize: 25)),
                   ),
                   SizedBox(
                     height: 20,
@@ -169,8 +174,9 @@ class _HomeState extends State<Home> {
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: amountController,
-                    decoration:
-                        const InputDecoration(labelText: 'จำนวนคงเหลือสินค้า'),
+                    decoration: const InputDecoration(
+                        labelText: 'จำนวนคงเหลือสินค้า',
+                        labelStyle: TextStyle(fontSize: 25)),
                   ),
                   SizedBox(
                     height: 20,
@@ -212,7 +218,7 @@ class _HomeState extends State<Home> {
         elevation: 0.0,
         centerTitle: true,
         title: Text(
-          'แอพช่วยซื้อสินค้าเข้าบ้าน',
+          'ผู้ช่วยซื้อสินค้าเข้าบ้าน',
           style: TextStyle(
               fontFamily: 'Varela', fontSize: 20.0, color: Colors.white),
         ),
@@ -237,6 +243,13 @@ class _HomeState extends State<Home> {
               itemCount: streamSnapshot.data!.docs.length,
               itemBuilder: (context, index) {
                 final DocumentSnapshot data = streamSnapshot.data!.docs[index];
+
+                final timestamp = data['timestamp'] as Timestamp;
+                final Date =
+                    DateFormat('dd MMM yyyy').format(timestamp.toDate());
+                final Time = DateFormat('H.mm')
+                    .addPattern('น.')
+                    .format(timestamp.toDate());
                 if (data['amount'] <= 1) {
                   return Card(
                     elevation: 5,
@@ -294,10 +307,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                      "วันที่ : " +
-                                          DateFormat(' dd MMM yyyy').format(
-                                              data['timestamp'].toDate()),
+                                  child: Text("วันที่ : " + Date,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -305,10 +315,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                      "เวลา : " +
-                                          DateFormat(' hh:mm aaa').format(
-                                              data['timestamp'].toDate()),
+                                  child: Text("เวลา : " + Time,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -415,10 +422,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                      "วันที่ : " +
-                                          DateFormat(' dd MMM yyyy').format(
-                                              data['timestamp'].toDate()),
+                                  child: Text("วันที่ : " + Date,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -426,10 +430,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                      "เวลา : " +
-                                          DateFormat(' hh:mm aaa').format(
-                                              data['timestamp'].toDate()),
+                                  child: Text("เวลา : " + Time,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -536,10 +537,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                      "วันที่ : " +
-                                          DateFormat(' dd MMM yyyy').format(
-                                              data['timestamp'].toDate()),
+                                  child: Text("วันที่ : " + Date,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -547,10 +545,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(
-                                      "เวลา : " +
-                                          DateFormat(' hh:mm aaa').format(
-                                              data['timestamp'].toDate()),
+                                  child: Text("เวลา : " + Time,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -698,17 +693,22 @@ class _SearchPageState extends State<SearchPage> {
                 children: [
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(labelText: 'ชื่อสินค้า'),
+                    decoration: const InputDecoration(
+                        labelText: 'ชื่อสินค้า',
+                        labelStyle: TextStyle(fontSize: 25)),
                   ),
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: amountController,
-                    decoration: const InputDecoration(labelText: 'จำนวน'),
+                    decoration: const InputDecoration(
+                        labelText: 'จำนวนคงเหลือสินค้า',
+                        labelStyle: TextStyle(fontSize: 25)),
                   ),
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: priceController,
-                    decoration: const InputDecoration(labelText: 'ราคา'),
+                    decoration: const InputDecoration(
+                        labelText: 'ราคา', labelStyle: TextStyle(fontSize: 25)),
                   ),
                   SizedBox(
                     height: 20,
@@ -767,8 +767,9 @@ class _SearchPageState extends State<SearchPage> {
                   TextField(
                     keyboardType: TextInputType.number,
                     controller: amountController,
-                    decoration:
-                        const InputDecoration(labelText: 'จำนวนคงเหลือ'),
+                    decoration: const InputDecoration(
+                        labelText: 'จำนวนคงเหลือสินค้า',
+                        labelStyle: TextStyle(fontSize: 25)),
                   ),
                   SizedBox(
                     height: 20,
@@ -822,7 +823,10 @@ class _SearchPageState extends State<SearchPage> {
           itemCount: streamSnapshot.length,
           itemBuilder: (context, index) {
             final DocumentSnapshot data = streamSnapshot[index];
-
+            final timestamp = data['timestamp'] as Timestamp;
+            final Date = DateFormat('dd MMM yyyy').format(timestamp.toDate());
+            final Time =
+                DateFormat('H.mm').addPattern('น.').format(timestamp.toDate());
             if (data['amount'] <= 1) {
               return Card(
                 elevation: 5,
@@ -878,23 +882,17 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                  "วันที่ซื้อล่าสุด : " +
-                                      DateFormat(' dd MMM yyyy')
-                                          .format(data['timestamp'].toDate()),
+                              child: Text("วันที่ : " + Date,
                                   style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white)),
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                  "เวลาซื้อล่าสุด : " +
-                                      DateFormat(' hh:mm aaa')
-                                          .format(data['timestamp'].toDate()),
+                              child: Text("เวลา : " + Time,
                                   style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white)),
                             ),
@@ -997,10 +995,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                  "วันที่ : " +
-                                      DateFormat(' dd MMM yyyy')
-                                          .format(data['timestamp'].toDate()),
+                              child: Text("วันที่ : " + Date,
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -1008,10 +1003,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                  "เวลา : " +
-                                      DateFormat(' hh:mm aaa')
-                                          .format(data['timestamp'].toDate()),
+                              child: Text("เวลา : " + Time,
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -1116,10 +1108,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                  "วันที่ : " +
-                                      DateFormat(' dd MMM yyyy')
-                                          .format(data['timestamp'].toDate()),
+                              child: Text("วันที่ : " + Date,
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -1127,10 +1116,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8, right: 8),
-                              child: Text(
-                                  "เวลา : " +
-                                      DateFormat(' hh:mm aaa')
-                                          .format(data['timestamp'].toDate()),
+                              child: Text("เวลา : " + Time,
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
